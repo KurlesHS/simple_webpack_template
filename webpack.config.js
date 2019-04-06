@@ -2,11 +2,11 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-
-
 const webpack = require('webpack')
+
 const devMode = process.env.NODE_ENV !== 'production';
 console.log(devMode)
+
 
 const config = {
   // Tells Webpack which built-in optimizations to use
@@ -89,7 +89,7 @@ const config = {
             options: {
               // The image will be named with the original name and
               // extension
-              name(file) {
+              name() {
                 return '[hash].[ext]';
               },
               // Indicates where the images are stored and will use
@@ -124,7 +124,9 @@ const config = {
   ]
 };
 
+// noinspection JSUnusedLocalSymbols
 module.exports = (env, argv) => {
+  // generate map files only for development build
   if (devMode) {
     config.plugins.push(
         new webpack.SourceMapDevToolPlugin({
