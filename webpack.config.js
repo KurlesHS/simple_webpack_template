@@ -27,9 +27,12 @@ const config = {
     publicPath: '',
     // The name of the output bundle. Path is also relative
     // to the output path
-    filename: '[hash].js'
+    filename: devMode ? '[name].js' : '[hash].js'
   },
   devtool: false,
+  devServer: {
+    contentBase: './dist'
+  },
   module: {
     // Array of rules that tells Webpack how the modules (output)
     // will be created
@@ -90,7 +93,7 @@ const config = {
               // The image will be named with the original name and
               // extension
               name() {
-                return '[hash].[ext]';
+                return devMode ? '[name].[ext]' : '[hash].[ext]';
               },
               // Indicates where the images are stored and will use
               // this path when generating the CSS files.
@@ -102,8 +105,7 @@ const config = {
               // publicPath: 'images',
               // When this option is 'true', the loader will emit
               // the image to output.path
-              emitFile: true,
-              outputPath: ''
+              emitFile: true
             }
           }
         ]
@@ -116,7 +118,7 @@ const config = {
     // indicating what the CSS outputted file name should be and
     // the location
     new MiniCssExtractPlugin({
-      filename: '[hash].css'
+      filename: devMode ? '[name].css' : '[hash].css'
     }),
     new HtmlWebpackPlugin({
       template: './src/index.html'
@@ -130,7 +132,7 @@ module.exports = (env, argv) => {
   if (devMode) {
     config.plugins.push(
         new webpack.SourceMapDevToolPlugin({
-      filename: '[hash].js.map'
+      filename: devMode ? '[name].js.map' : '[hash].js.map'
     }))
   }
   return config
