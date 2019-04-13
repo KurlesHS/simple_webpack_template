@@ -9,131 +9,134 @@ console.log(devMode)
 
 
 const config = {
-  // Tells Webpack which built-in optimizations to use
-  // In 'production' mode, Webpack will minify and uglify our JS code
-  // If you leave this out, Webpack will default to 'production'
-  mode: devMode ? 'development' : 'production',
-  // Webpack needs to know where to start the bundling process,
-  // so we define the main JS and Sass files, both under
-  // the './src' directory
-  entry: ['./src/scripts/main.js', './src/styles/main.scss', './src/index.html'],
-  // This is where we define the path where Webpack will place
-  // the bundled JS file
-  output: {
-    path: devMode ? path.resolve(__dirname, 'public') : path.resolve(__dirname, 'dist'),
-    // Specify the base path for all the assets within your
-    // application. This is relative to the output path, so in
-    // our case it will be ./public/assets
-    publicPath: '',
-    // The name of the output bundle. Path is also relative
-    // to the output path
-    filename: devMode ? '[name].js' : '[hash].js'
-  },
-  devtool: false,
-  devServer: {
-    contentBase: './dist'
-  },
-  module: {
-    // Array of rules that tells Webpack how the modules (output)
-    // will be created
-    rules: [
-      {
-        test: /\.(html)$/,
-        use: {
-          loader: 'html-loader'
-        }
-      },
-      {
-        // Look for JavaScript files and apply the babel-loader
-        // excluding the './node_modules' directory. It uses the
-        // configuration in `.babelrc`
-        test: /\.(js)$/,
-        exclude: /node_modules/,
-        use: ['babel-loader']
-      },
-      {
-        // Look for Sass files and process them according to the
-        // rules specified in the different loaders
-        test: /\.(sa|sc)ss$/,
-        // Use the following loaders from right-to-left, so it will
-        // use sass-loader first and ending with MiniCssExtractPlugin
-        use: [
-          {
-            // Extracts the CSS into a separate file and uses the
-            // defined configurations in the 'plugins' section
-            loader: MiniCssExtractPlugin.loader
-          },
-          {
-            // Interprets CSS
-            loader: 'css-loader',
-            options: {
-              importLoaders: 2
+    // Tells Webpack which built-in optimizations to use
+    // In 'production' mode, Webpack will minify and uglify our JS code
+    // If you leave this out, Webpack will default to 'production'
+    mode: devMode ? 'development' : 'production',
+    // Webpack needs to know where to start the bundling process,
+    // so we define the main JS and Sass files, both under
+    // the './src' directory
+    entry: ['./src/scripts/main.js', './src/styles/main.scss'],
+    // This is where we define the path where Webpack will place
+    // the bundled JS file
+    output: {
+        path: devMode ? path.resolve(__dirname, 'public') : path.resolve(__dirname, 'dist'),
+        // Specify the base path for all the assets within your
+        // application. This is relative to the output path, so in
+        // our case it will be ./public/assets
+        publicPath: '',
+        // The name of the output bundle. Path is also relative
+        // to the output path
+        filename: devMode ? '[name].js' : '[contenthash].js'
+    },
+    devtool: false,
+    devServer: {
+        contentBase: './dist'
+    },
+    module: {
+        // Array of rules that tells Webpack how the modules (output)
+        // will be created
+        rules: [
+            {
+                test: /\.(html)$/,
+                use: ['html-loader'],
+            },
+            {
+                // Look for JavaScript files and apply the babel-loader
+                // excluding the './node_modules' directory. It uses the
+                // configuration in `.babelrc`
+                test: /\.(js)$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'babel-loader',
+                    }
+                ]
+            },
+            {
+                // Look for Sass files and process them according to the
+                // rules specified in the different loaders
+                test: /\.(sa|sc)ss$/,
+                // Use the following loaders from right-to-left, so it will
+                // use sass-loader first and ending with MiniCssExtractPlugin
+                use: [
+                    {
+                        // Extracts the CSS into a separate file and uses the
+                        // defined configurations in the 'plugins' section
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    {
+                        // Interprets CSS
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 2
+                        }
+                    },
+                    {
+                        // Use PostCSS to minify and autoprefix. This loader
+                        // uses the configuration in `postcss.config.js`
+                        loader: 'postcss-loader'
+                    },
+                    {
+                        // Adds support for Sass files, if using Less, then
+                        // use the less-loader
+                        loader: 'sass-loader'
+                    }
+                ]
+            },
+            {
+                // Adds support to load images in your CSS rules. It looks
+                // for .png, .jpg, .jpeg and .gif
+                test: /\.(png|jpe?g|gif|svg)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            // The image will be named with the original name and
+                            // extension
+                            name() {
+                                return devMode ? '[name].[ext]' : '[hash].[ext]';
+                            },
+                            // Indicates where the images are stored and will use
+                            // this path when generating the CSS files.
+                            // Example, in main.scss I have
+                            // url('../../public/assets/images/venice-italy.jpg')
+                            // and when generating the CSS file, it will be
+                            // outputted as url(../images/venice-italy.jpg), which
+                            // is relative to /styles/main.css
+                            // publicPath: 'images',
+                            // When this option is 'true', the loader will emit
+                            // the image to output.path
+                            emitFile: true
+                        }
+                    }
+                ]
             }
-          },
-          {
-            // Use PostCSS to minify and autoprefix. This loader
-            // uses the configuration in `postcss.config.js`
-            loader: 'postcss-loader'
-          },
-          {
-            // Adds support for Sass files, if using Less, then
-            // use the less-loader
-            loader: 'sass-loader'
-          }
         ]
-      },
-      {
-        // Adds support to load images in your CSS rules. It looks
-        // for .png, .jpg, .jpeg and .gif
-        test: /\.(png|jpe?g|gif|svg)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              // The image will be named with the original name and
-              // extension
-              name() {
-                return devMode ? '[name].[ext]' : '[hash].[ext]';
-              },
-              // Indicates where the images are stored and will use
-              // this path when generating the CSS files.
-              // Example, in main.scss I have
-              // url('../../public/assets/images/venice-italy.jpg')
-              // and when generating the CSS file, it will be
-              // outputted as url(../images/venice-italy.jpg), which
-              // is relative to /styles/main.css
-              // publicPath: 'images',
-              // When this option is 'true', the loader will emit
-              // the image to output.path
-              emitFile: true
-            }
-          }
-        ]
-      }
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+        // Configuration options for MiniCssExtractPlugin. Here I'm only
+        // indicating what the CSS outputted file name should be and
+        // the location
+        new MiniCssExtractPlugin({
+            filename: devMode ? '[name].css' : '[contenthash].css'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.html',
+            filename: 'index.html'
+        })
     ]
-  },
-  plugins: [
-    new CleanWebpackPlugin(),
-    // Configuration options for MiniCssExtractPlugin. Here I'm only
-    // indicating what the CSS outputted file name should be and
-    // the location
-    new MiniCssExtractPlugin({
-      filename: devMode ? '[name].css' : '[hash].css'
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/index.html'
-    })
-  ]
 };
 
 // noinspection JSUnusedLocalSymbols
 module.exports = (env, argv) => {
-  // generate map files only for development build
-  if (devMode) {
-    config.plugins.push(
-        new webpack.SourceMapDevToolPlugin({
-      filename: devMode ? '[name].js.map' : '[hash].js.map'
-    }))
-  }
-  return config
+    // generate map files only for development build
+    if (devMode) {
+        config.plugins.push(
+            new webpack.SourceMapDevToolPlugin({
+                filename: devMode ? '[name].js.map' : '[hash].js.map'
+            }))
+    }
+    return config
 }
